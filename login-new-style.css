@@ -112,6 +112,10 @@ body {
     margin-bottom: -20px;
 }
 
+.captcha_custom {
+    margin-left: 0 !important;
+}
+
 .register-bottom-custom {
     background-color: #ffd000 !important;
 }
@@ -158,5 +162,9 @@ body {
 
     .footer-dispositivos {
         margin-bottom: 100px;
+    }
+
+    .captcha_custom {
+        margin-left: -15px !important;
     }
 }
