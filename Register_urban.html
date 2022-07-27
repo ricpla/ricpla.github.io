@@ -1,0 +1,534 @@
+{capture append="globalcss"}
+<link href="{$www_root_content}templates/{$template.path}/css/register.css?v={$smarty.const.TIKILIVE_VERSION}" rel="stylesheet">
+{/capture}
+{include file='common/schedule/header.html'}
+    <style>
+
+.myButton {
+	box-shadow:inset 0px 1px 0px 0px #7a8eb9;
+	background:linear-gradient(to bottom, #637aad 5%, #5972a7 100%);
+	background-color:#637aad;
+	border:1px solid #314179;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:13px;
+	font-weight:bold;
+	padding:5px 45px;
+	text-decoration:none;
+}
+.myButton:hover {
+	background:linear-gradient(to bottom, #5972a7 5%, #637aad 100%);
+	background-color:#5972a7;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+
+.myButton h2{
+font-size: 15px;
+}
+.myButton h1{
+font-size: 15px;
+}
+</style>
+
+    <script>
+        window.fbAsyncInit = function () {
+            // FB JavaScript SDK configuration and setup
+            FB.init({
+                appId: '684906042411125', // FB App ID
+                cookie: true,  // enable cookies to allow the server to access the session
+                xfbml: true,  // parse social plugins on this page
+                version: 'v3.2' // use graph api version 2.8
+            });
+
+            // Check whether the user already logged in
+            FB.getLoginStatus(function (response) {
+                if (response.status === 'connected') {
+                    //display user data
+                    getFbUserData();
+                }
+            });
+        };
+
+        // Load the JavaScript SDK asynchronously
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        // Facebook login with JavaScript SDK
+        function fbLogin() {
+            FB.login(function (response) {
+                if (response.authResponse) {
+                    // Get and display the user profile data
+                    getFbUserData();
+                } else {
+                    document.getElementById('status').innerHTML = 'User cancelled login or did not fully authorize.';
+                }
+            }, { scope: 'email' });
+        }
+
+        // Fetch the user profile data from facebook
+        function getFbUserData() {
+            FB.api('/me', { locale: 'en_US', fields: 'id,first_name,last_name,email,link,gender,locale,picture' },
+                function (response) {
+                    document.getElementById('fbLink').setAttribute("onclick", "fbLogout()");
+                    document.getElementById('fbLink').innerHTML = 'Logout from Facebook';
+                    document.getElementById('status').innerHTML = '<p>Thanks for logging in, ' + response.first_name + '!</p>';
+                    document.getElementById('userData').innerHTML = '<h2>Facebook Profile Details</h2><p><img src="' + response.picture.data.url + '"/></p><p><b>FB ID:</b> ' + response.id + '</p><p><b>Name:</b> ' + response.first_name + ' ' + response.last_name + '</p><p><b>Email:</b> ' + response.email + '</p><p><b>Gender:</b> ' + response.gender + '</p><p><b>FB Profile:</b> <a target="_blank" href="' + response.link + '">click to view profile</a></p>';
+                });
+        }
+
+        // Logout from facebook
+        function fbLogout() {
+            FB.logout(function () {
+                document.getElementById('fbLink').setAttribute("onclick", "fbLogin()");
+                document.getElementById('fbLink').innerHTML = '<h1>Log out<h2>';
+                document.getElementById('userData').innerHTML = '';
+                document.getElementById('status').innerHTML = '<p>You have successfully logout from Facebook.</p>';
+            });
+        }
+        function saveUserData(userData) {
+                $.post('userData.php', { oauth_provider: 'facebook', userData: JSON.stringify(userData) }, function () { return true; });
+            }
+
+            function getFbUserData() {
+                    FB.api('/me', { locale: 'en_US', fields: 'id,first_name,last_name,email,link,gender,locale,picture' },
+                        function (response) {
+                            document.getElementById('fbLink').setAttribute("onclick", "fbLogout()");
+                            document.getElementById('fbLink').innerHTML = 'Logout from Facebook';
+                            document.getElementById('status').innerHTML = '<p>Thanks for logging in, ' + response.first_name + '!</p>';
+                            document.getElementById('userData').innerHTML = '<h2>Facebook Profile Details</h2><p><img src="' + response.picture.data.url + '"/></p><p><b>FB ID:</b> ' + response.id + '</p><p><b>Name:</b> ' + response.first_name + ' ' + response.last_name + '</p><p><b>Email:</b> ' + response.email + '</p><p><b>Gender:</b> ' + response.gender + '</p><p><b>FB Profile:</b> <a target="_blank" href="' + response.link + '">click to view profile</a></p>';
+
+                            // Save user data
+                            saveUserData(response);
+                        });
+                }
+    </script>
+
+<div class="container-fluid register-container">
+        <div class="title text-center">
+            {$dict.create_free_account|replace:'#app_name#':$smarty.const.APP_NAME}
+        </div>
+        <div class="container register-form-box ">
+            <div class="{if $smarty.const.DOMAIN|substr:-12 === 'tikilive.com'  } display-flex{/if}">
+            <div class="{if $smarty.const.DOMAIN|substr:-12 !== 'tikilive.com'  }  col-md-offset-2 col-md-8 {else}  col-md-6 col-sm-12 {/if}    col-xs-12 register-first-col">
+                <div class="register-form-top">
+                    <input type="hidden" id="facebook_login_enabled" value="{$data.facebook_login_enabled}">
+                    <input type="hidden" id="twitter_login_enabled" value="{$data.twitter_login_enabled}">
+                    <input type="hidden" name="user_type" id="user_type" value="viewer" />
+
+                    {if $data.facebook_login_enabled == 'yes'}
+                        <input type="hidden" id="facebook_app_id" value="{$data.facebook_app_id}">
+                    {/if}
+
+                     <div class="row subtitle text-center">{$dict.sign_up_account}</div> 
+                    {if !$data.register.redeem_request}
+                         <div class="row">
+                            <div class="row margin-bottom-medium">
+                                {if $data.facebook_login_enabled == 'yes'}
+         
+          
+                                <div id="status"></div>
+    
+    <!-- Facebook login or logout button-->
+    <a  class="myButton" href="javascript:void(0);" onclick="fbLogin();" id="fbLink"><h1>Login fb</h1></a>
+    <div class="ac-data" id="userData"></div>
+ 
+                                {/if}
+  
+                  </div>
+                        </div>
+                        <h2 class="row text-center margin-top-big" style="margin-bottom: 20px">{$dict.sing_up_email_address}</h2>
+                    {/if}
+                    <div class="row register-form " id="registerForm">
+                        <form action="{if $smarty.const.ENABLE_HTTPS == 'normal' || $smarty.const.ENABLE_HTTPS == 'full'}{$smarty.const.WWW_ROOT_HTTPS}{else}{$www_root}{/if}register" method="post" id="frm_register">
+                            
+                             <div class="flat-alert">
+                                {messages}
+                            </div>
+                         
+                            <div id="frmRegisterFields">
+                                {if $smarty.const.MODULE_AFFILIATES === true && !$data.register.redeem_request}
+                                 <div class="control-group" id="userReferralIdWrapper">
+                                    <div class="controls affiliate-controls">
+                                            <input type="text" class="form-control register-input affSearch" id="userReferralId" value="Referred by {$data.user_referral_placeholder}" name="user_referral_id" placeholder="Referred by {$data.user_referral_placeholder}" autocomplete="off" />
+                                           
+                                            <span class="register-add-on register-add-on-spinner pull-right">
+                                                <img class="Typeahead-spinner pull-left" src="{$www_root_content}templates/{$template.path}/images/signup_wizard/spinner.gif">
+                                            </span>
+                                            <div class="error_wrap"><span id="validateUserReferralId" class="help-block">&nbsp;</span></div>
+                                       
+                                    </div>
+                                </div>
+                                {/if}
+
+                                {if $data.activation_code}
+                                    <input type="text" class="form-control register-input  input-mandatory margin-top-big" id="activation_code" name="activation_code" placeholder="{$dict.activation_code}" value="{if $data.activation_code !== true}{$data.activation_code}{/if}"/>
+                                {/if} 
+                      
+                                <input type="hidden" id="oauth" name="oauth_id" value="{$data.oauth}">
+
+                                <input type="text" class="form-control register-input  input-mandatory {if $smarty.const.MODULE_DEALERS === true || $smarty.const.MODULE_COUPONS === true}margin-top-big{/if}" id="user_username" name="user_username" value="{$data.register.username}" placeholder="{$dict.username_rtegister}"/>
+                                <div class="error_wrap"><span id="validateUsername" class="help-block"></span></div>
+
+                                <input type="text" class="form-control register-input input-mandatory margin-top-big" id="user_email" name="user_email" value="{$data.register.email}"  placeholder="{$dict.email_register}"/>
+                                <div class="error_wrap"><span id="validateEmail" class="help-block"></span></div>
+
+                                <input type="password" class="form-control register-input  input-mandatory margin-top-big" placeholder="{$dict.password_register}" name="user_password" id="user_password" value="{$data.register.password}" autocomplete="off" />
+                                <div class="error_wrap"><span id="validatePassword" class="help-block"></span></div>
+
+                                <input type="text" class="form-control register-input input-mandatory margin-top-big" id="user_phone" value="{$data.register.phone}" name="user_phone"  placeholder="{$dict.phone_register}"/>
+                                <div class="error_wrap"><span id="validatePhone" class="help-block"></span></div>
+                                <div class="row" style="margin-top: 5%">
+                                    {if $smarty.const.MODULE_DEALERS === true && !$data.register.redeem_request}
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <input type="text" class="form-control register-input " id="dealer_referral_id" name="dealer_referral_id" placeholder="{if $data.referral_id != ''}{$data.referral_id}{else}{$dict.referral_id} {$dict.optional}{/if}" value="{$data.referral_id}"/>
+                                            <div class="error_wrap"><span id="validateRefferalID" class="help-block"></span></div>
+                                        </div>
+                                       
+                                    {/if}
+                                    {if $smarty.const.MODULE_COUPONS === true &&  $data.register.redeem_request}
+                                        <div class="{if $data.register.redeem_request} col-md-12 col-sm-12 col-xs-12 {else} col-md-6 col-sm-6 col-xs-6 {/if}">
+                                            <input type="hidden" name="redeem_request" value="{$data.register.redeem_request}">
+                                            <input type="text" class="form-control register-input input-mandatory col-md-6 col-sm-6 col-xs-6" id="redeem_code" name="redeem_code" placeholder="{if $data.redeem_code != ''}{$data.redeem_code}{else}{$dict.redeem_code} {/if}" value="{$data.redeem_code}"/>
+                                            <div class="error_wrap"><span id="validateRedeemCode" class="help-block"></span></div>
+                                        </div>
+                                    {/if}
+                                </div>
+
+                            </div>
+                            <div class="row margin-top-big">
+                                <div class="col-md-6 col-sm-6 col-xs-6 ">
+                                    {if $data.captcha_client_side}
+                                    <div class="g-recaptcha captcha_custom" id="google-recaptcha" data-theme="dark" data-callback="recaptchaCallback" data-sitekey="{$data.captcha_client_side}"></div>
+                                    {/if}
+                                </div>
+                            </div>
+                            <div class="row margin-top-big register-bottom" id="viewerBottom">
+                                <div class="col-md-12 col-xs-12 col-sm-12">
+                                    <button class="form-control btn btn-primary btn-block btn-larger btn-classic-register disabled" id="viewerSubmitButton"  type="submit" 
+                                     disabled="disabled">
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row margin-top-medium">
+                                <p class="col-md-12 col-sm-12 col-xs-12  text-center">{$dict.register_viewer_info}</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {if !$data.register.redeem_request}
+                <div class="register-form-bottom">
+                    <div class="text-center">
+                        <a class="btn btn-primary btn-lg" href="{$www_root}login" alt="login"><h3 style="color:white;font-weight:bold;margin-top: 0px;margin-bottom: 0px">{$dict.or_login}</h3></a> 
+                    </div>
+                    <div class="text-center">{$dict.already_have_account}</div>
+                </div>
+                {/if}
+            </div>
+            {if $smarty.const.DOMAIN|substr:-12 === 'tikilive.com' }
+                {if $data.register.redeem_request && $smarty.const.MODULE_COUPONS === true}
+                <div class="col-md-6 col-sm-12 col-xs-12 register-second-col">
+                    <div class="row register-details-promo">
+                         <div class="promo-title">{$dict.coupon_steps_title|replace:'#app_name#':$smarty.const.APP_NAME}</div>
+                        <div class="margin-top-medium col-details">
+                            <div class="row">
+                                <div class="col-md-12 col-xs-12 col-sm-12">
+                                    <div class="number text-left " ><div class="step-badge step1 text-center ">1</div></div>
+                                    <div class="col-md-10 col-sm-10 col-xs-10" >
+                                        <span class="marker">{$dict.coupon_step1_title}</span><br>
+                                        {$dict.coupon_step1_desc|replace:'#app_name#':$smarty.const.APP_NAME}
+                                        <a href="#" id="redeem_info">Can't find it?</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="margin-top-medium col-details">
+                            <div class="row">
+                                <div class="col-md-12 col-xs-12 col-sm-12"> 
+                                    <div class="number text-left" ><div class="step-badge step1 text-center ">2</div></div>
+                                    <div class="col-md-10 col-sm-10 col-xs-10" >
+                                        <span class="marker">{$dict.coupon_step2_title}</span><br>
+                                        {$dict.coupon_step2_desc}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="margin-top-medium col-details">
+                            <div class="row">
+                                 <div class="col-md-12 col-xs-12 col-sm-12">
+                                     <div class="number text-left " ><div class="step-badge step1 text-center ">3</div></div>
+                                    <div class="col-md-10 col-sm-10 col-xs-10" >
+                                        <span class="marker">{$dict.coupon_step3_title}</span><br>
+                                        {$dict.coupon_step3_desc}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="best-buy-promo ">
+                        <div class="row">
+                                 <div class="col-md-12 col-xs-12 col-sm-12">
+                                     <div class="number text-left " > <img src="{$www_root_content}templates/{$template.path}/images/register/bestbuy-bottom-logo.png" class="img-responsive"></div>
+                                    <div class="col-md-10 col-sm-10 col-xs-10">
+                                       {$dict.bestbuy_desc}
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+                {else}
+                <div class="col-md-6 col-sm-6 col-xs-12 register-second-col">
+                    <div class="row register-details">
+                         <div>{$dict.sign_up_message}</div>
+                        <div class="margin-top-medium col-details">
+                            <div class="row">
+                                <div class="col-md-2 col-xs-4 col-sm-4"><img src="{$www_root_content}templates/{$template.path}/images/register/signup-user-icon.png" class="img-responsive" alt="sign up free account"/></div>
+                                <div class="col-md-10 col-xs-8 col-sm-8">
+                                    <span class="marker">{$dict.free_account}</span>
+                                    <div>
+                                        {$dict.register_offer}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="margin-top-medium col-details">
+                            <div class="row">
+                                <div class="col-md-2 col-xs-4 col-sm-4"><img src="{$www_root_content}templates/{$template.path}/images/register/signup-mobile-icon.png" class="img-responsive" alt="mobile free account"/></div>
+                                <div class="col-md-10 col-xs-8 col-sm-8">
+                                    <span class="marker">{$dict.live_go}</span>
+                                    <div>
+                                        {$dict.register_offer_mobile}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="margin-top-medium col-details">
+                            <div class="row">
+                                 <div class="col-md-2 col-xs-4 col-sm-4"><img src="{$www_root_content}templates/{$template.path}/images/register/signup-radio-icon.png" class="img-responsive" alt="radio platform"/></div>
+                                <div class="col-md-10 col-xs-8 col-sm-8">
+                                    <span class="marker">{$dict.register_better_radio}</span>
+                                    <div>
+                                        {$dict.register_better_radio_details}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/if}
+            {/if}
+        </div>
+        </div>
+</div>
+<div class="modal modal-theme-dark fade margin-top-big" tabindex="-1" role="dialog" id="info-redeem-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">{$dict.redeem_info_title}</h4>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"> <img src="{$www_root_content}templates/{$template.path}/images/register/bestbuy-bottom-logo-big.png" ></div>
+        <div class="margin-top-big description">{$dict.redeem_info_description}</div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+{capture append="globaljs"}
+
+<script type="text/javascript">
+    var module_affiliates = "{$smarty.const.MODULE_AFFILIATES === true}";
+</script>
+{literal}
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script id="result-template" type="text/x-handlebars-template"><div class="ProfileCard u-cf"><img class="ProfileCard-avatar" src="{{thumb}}"><div class="ProfileCard-details"><div class="ProfileCard-realName">{{username}}&nbsp;({{id_str}})</div><div class="muted muted-details">{{name}}<div class="ProfileCard-screenName">{{#if city}}, {{city}}{{/if}}{{#if state}}, {{state}}{{/if}}</div></div></div></div></script>
+{/literal}
+
+{literal}
+<script id="empty-template" type="text/x-handlebars-template"><div class="ProfileCard u-cf tt-suggestion tt-selectable"><div class="ProfileCard-details"><div class="ProfileCard-realName">{/literal}{$dict.no_results}{literal}</div></div></div></script>
+{/literal}
+
+<script src="{$www_root_content}templates/{$template.path}/js/typeahead/handlebars.js"></script>
+<script src="{$www_root_content}templates/{$template.path}/js/typeahead/typeahead.bundle.min.js"></script>
+
+
+<script type="text/javascript">
+    var dict_create_account_button = '{$dict.create_account_button|escape:"javascript"}';
+    var dict_fill_data_button = '{$dict.fill_data_button|escape:"javascript"}';
+
+    var phone_length_error = '{$dict.error_user_phone|escape:"javascript"}';
+    var captcha_length_error = '{$dict.invalid_code|escape:"javascript"}';
+    var password_length_error = '{$dict.password_length_error|escape:"javascript"}';
+    var password_must_be_the_same_error = '{$dict.password_must_be_the_same_error|escape:"javascript"}';
+    var catchaSet = "{$data.captcha_client_side}";
+    var redeem_request = "{$data.register.redeem_request}";
+
+
+    var typeahead = jQuery.fn.typeahead.noConflict();
+    jQuery.fn._typeahead = typeahead;
+
+    var $infoDetailsModal = $('#info-redeem-modal');
+      $('#redeem_info').click(function(e) {
+        e.preventDefault();
+        $('#info-redeem-modal').modal('show');
+        return false;
+      });
+
+    function recaptchaCallback() {
+        $('html, body').animate({
+                    scrollTop: $('#google-recaptcha').offset().top-100
+                  }, 800);
+        validCaptcha = true;
+        validateRegisterForm();
+    }
+    {literal}
+    $(document).ready(function() {
+
+        // Affiliate search
+        var affiliates, template, empty;
+
+        $.support.cors = false;
+
+        template = Handlebars.compile($("#result-template").html());
+        empty = Handlebars.compile($("#empty-template").html());
+        var affiliates = new Bloodhound({
+            identify: function(o) { return o.id_str; },
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            dupDetector: function(a, b) { return a.id_str === b.id_str; },
+            prefetch: '{/literal}{$www_root}{literal}index.php?module=shared/search_affiliates_prefetch',
+            remote: {
+                url: '{/literal}{$www_root}{literal}index.php?module=shared/search_affiliates&q=%QUERY',
+                wildcard: '%QUERY'
+            }
+        });
+
+        // 1. clear suggestions loaded from local and prefetch
+        affiliates.clear();
+        // 2. clear prefetch data stored in local storage
+        affiliates.clearPrefetchCache();
+        // 3. clear cache of responses generated by remote requests
+        affiliates.clearRemoteCache();
+        // 4. reinitialize the suggestion engine i.e. load data from `local` and `prefetch`
+        affiliates.initialize(true); // have to pass true in order to reinitialize
+
+        function affiliatesWithDefaults(q, sync, async) {
+
+            if (q === '') {
+                sync(affiliates.get(/*{/literal}{$smarty.const.DEFAULT_AFFILIATE_ID}{literal}*/));
+                async([]);
+            } else {
+                if (q.indexOf("Referred by") >= 0) {
+                    var start_pos = q.indexOf('(') + 1;
+                    var end_pos = q.indexOf(')',start_pos);
+                    var q = q.substring(start_pos,end_pos);
+                }
+
+                affiliates.search(q, sync, async);
+            }
+        }
+
+        $('.affSearch')._typeahead(
+        {
+            hint: true,
+            highlight: true
+        }, {
+            name: 'affiliates',
+            display: function(o) {
+
+                var line = "Referred by " + o.username + " (" + o.id_str + ") " + o.name;
+                if (o.city) {
+                    line += ", " + o.city;
+                }
+
+                if (o.state) {
+                    line += ", " + o.state;
+                }
+                return line;
+            },
+            displayKey: function(o) {
+                var line = "Referred by " + o.username + " (" + o.id_str + ") " + o.name;
+                if (o.city) {
+                    line += ", " + o.city;
+                }
+
+                if (o.state) {
+                    line += ", " + o.state;
+                }
+                return line;
+            },
+            source: affiliatesWithDefaults,
+            limit: 100,
+            templates: {
+                suggestion: template,
+                empty: empty
+            }
+        }).on('typeahead:asyncrequest', function() {
+            $('.Typeahead-spinner').show();
+        }).on('typeahead:asynccancel typeahead:asyncreceive', function() {
+            $('.Typeahead-spinner').hide();
+        });
+
+
+   
+
+    $('.affSearch').bind('_typeahead:close', function() {
+
+        var q = $('#userReferralId').val();
+        if (q.indexOf("Referred by") >= 0) {
+            var start_pos = q.indexOf('(') + 1;
+            var end_pos = q.indexOf(')',start_pos);
+            q = q.substring(start_pos,end_pos);
+        }
+
+        validateUserReferralIdFctSimple(q);
+    });
+
+    var validateUserReferralId = $('#validateUserReferralId');
+    function validateUserReferralIdFctSimple(value)
+    {
+        if (value) {
+            $('#userReferralId').addClass('input-loader');
+            validateUserReferralId.empty();
+            validateUserReferralId.timer = setTimeout(function () {
+                no_history_server_post(
+                        { m: 'register', action: 'check_referral_id', id: value},
+                        function(data) {
+                            $('#userReferralId').removeClass('input-loader');
+                            if(data.content=='ok'){
+                                $('#userReferralId').addClass('input-checked');
+                                $('#userReferralId').parent('.control-group').removeClass('error');
+                                validateUserReferralId.removeClass('register_error');
+                                validReferralId = true;
+                            } else {
+                                $('#userReferralId').removeClass('input-checked');
+                                $('#userReferralId').parent('.control-group').addClass('error');
+                                validateUserReferralId.html(data.content);
+                                validateUserReferralId.addClass('register_error');
+                                validReferralId = false;
+                            }
+                            validateRegisterForm();
+                        }
+                );
+            }, 200);
+        }
+    }
+
+});
+    {/*/literal*/}
+</script>
+<script type="text/javascript" src="{$www_root_content}templates/{$template.path}/js/register.js?v={$smarty.const.TIKILIVE_VERSION}"></script>
+{/capture}
+
+{include file='common/schedule/footer.html'}
