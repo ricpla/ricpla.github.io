@@ -6,7 +6,7 @@
 }
 
 body {
-    background-image: url("/login_background.png") !important;
+    background-image: url("login_background.png") !important;
     background-size: cover;
     background-position: left;
     overflow-x: hidden;
