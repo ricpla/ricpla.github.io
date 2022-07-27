@@ -134,7 +134,7 @@ body {
 }
 
 .footer-dispositivos {
-    margin-bottom: 100px;
+    margin-bottom: 0;
 }
 
 @media(max-width: 992px) {
@@ -154,5 +154,9 @@ body {
 
     .register-form-bottom_CUSTOM {
         margin-bottom: 10px;
+    }
+
+    .footer-dispositivos {
+        margin-bottom: 100px;
     }
 }
