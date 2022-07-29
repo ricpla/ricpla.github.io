@@ -87,6 +87,7 @@ body {
 .title-right {
     margin-top: 60px !important;
     margin-bottom: -40px !important;
+    text-align: center;
 }
 
 /* Agregado clase agradecimientos  */
@@ -94,6 +95,7 @@ body {
 .agredecimientos {
     margin-top: 60px !important;
     margin-bottom: -20px !important;
+    text-align: center;
 }
 
 .text-divisor {
