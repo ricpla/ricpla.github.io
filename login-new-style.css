@@ -12,8 +12,13 @@ body {
     overflow-x: hidden;
 }
 
+.container {
+    padding-left: 200px;
+    padding-right: 200px;
+}
+
 .semi-bold {
-    font-weight: 600; 
+    font-weight: 600;
 }
 
 .bold {
@@ -42,6 +47,7 @@ body {
 
 .titulo-agradecimientos {
     font-size: 20px;
+    color: white;
 }
 
 .iconoFacebook {
@@ -110,6 +116,7 @@ body {
 .center {
     text-align: center;
 }
+
 .label-registro {
     font-size: small;
     font-weight: 400;
@@ -184,5 +191,10 @@ body {
 
     .title-right {
         margin-top: 0 !important;
+    }
+
+    .container {
+        padding-left: 0;
+        padding-right: 0;
     }
 }

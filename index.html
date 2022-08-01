@@ -282,13 +282,19 @@
         }
     </script>
 
-    <div class="container-fluid">
-        <div class="row adaptar">
-            <div class="col-md-7 text-center">
+
+    <!-- Elimine las clases: col-md-7 col-md-5 row adaptar y container-fluid ahora es container todo esto para que quede en una sola columna-->
+    <!-- eliminado el "Bienvenido a VIVALIVETV ARGENTINA" -->
+    <!-- Pase para arriba los agradecimientos con los logos de Mundo urbana y tarjeta urbana -->
+    <div class="container">
+        <div class="">
+            <div class="text-center">
                 <!-- Nombre cambiado de title-left a title-right -->
-                <div class="title-right title">
-                    Bienvenido a <br>
-                    <spam class="semi-bold">VivaLiveTv Argentina</spam>
+                <!-- Agregado clase agradecimientos  -->
+                <div class="agredecimientos">
+                    <h1 class="bold titulo-agradecimientos"> VivaLiveTv llega a Argentina gracias a:
+                    </h1>
+                    <img src="logos.png" alt="" class="dispositivos-titulo">
                 </div>
                 <div class="container-fluid presentacion">
                     <div class="dispositivos-contenedor">
@@ -301,18 +307,12 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-5 register-container">
+            <div class="register-container">
 
 
                 <!-- Eliminado el icono y lo que quedaba de navbar de vivalive-->
 
                 <div class="  col-md-offset-1 col-md-10     col-xs-12 register-first-col sin-fondo">
-                    <!-- Agregado clase agradecimientos  -->
-                    <div class="agredecimientos">
-                        <h1 class="bold titulo-agradecimientos"> VivaLiveTv llega a Argentina gracias a:
-                        </h1>
-                        <img src="logos.png" alt="" class="dispositivos-titulo">
-                    </div>
                     <div class="register-form-top">
                         <input type="hidden" id="facebook_login_enabled" value="yes">
                         <input type="hidden" id="twitter_login_enabled" value="yes">
